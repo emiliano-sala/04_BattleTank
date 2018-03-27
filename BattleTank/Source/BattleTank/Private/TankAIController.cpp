@@ -1,19 +1,31 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "Engine/World.h"
 #include "TankAIController.h"
 
 void ATankAIController::BeginPlay()
 {
 	Super::BeginPlay();
 	auto PlayerTank = GetPlayerTank();
-	if (!PlayerTank) {
+	if (!PlayerTank)
+	{
 		UE_LOG(LogTemp, Warning, TEXT("AIController can't find player tank!"))
 	}
-	else {
+	else
+	{
 		UE_LOG(LogTemp, Warning, TEXT("AIController found player tank %s"), *(PlayerTank->GetName()))
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("AIController Begin Play"))
+}
+
+void ATankAIController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	if (GetPlayerTank())
+	{
+		GetControlledTank()->AimAt(GetPlayerTank()->GetActorLocation());
+	}	
 }
 
 ATank* ATankAIController::GetControlledTank() const
@@ -24,10 +36,12 @@ ATank* ATankAIController::GetControlledTank() const
 ATank* ATankAIController::GetPlayerTank() const
 {
 	auto PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-	if (!PlayerPawn) {
+	if (!PlayerPawn)
+	{
 		return __nullptr;
 	}
-	else {
+	else
+	{
 		return Cast<ATank>(PlayerPawn);
 	}
 }
